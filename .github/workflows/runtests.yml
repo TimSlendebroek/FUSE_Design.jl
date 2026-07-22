@@ -40,16 +40,32 @@ jobs:
           julia --color=yes -e 'using Pkg; Pkg.Registry.add(RegistrySpec(url="https://github.com/ProjectTorreyPines/FuseRegistry.jl.git")); Pkg.Registry.add("General"); Pkg.Registry.update()'
 
       # Always test against the FORK versions of IMAS/EPEDNN — their additions (e.g.
-      # IMAS.pedestal_poloidal_beta, EPEDNN.ensemble_uncertainty) are not in the registry. dev the
-      # forks, instantiate (rest resolves from FuseRegistry), and run the tests in the SAME session
-      # so Pkg.test() inherits the dev'd paths and can never fall back to the registry versions.
+      # IMAS.pedestal_poloidal_beta, EPEDNN.ensemble_uncertainty) are not in the registry.
+      # Coordinated changes across the forks use the SAME branch name: clone each fork at the
+      # branch matching the FUSE branch under test when it exists, else its master. dev the
+      # clones and run the tests in the SAME session so Pkg.test() inherits the dev'd paths
+      # and can never fall back to the registry versions.
+      - name: Clone matching fork branches (IMAS_Design / EPEDNN_Design)
+        env:
+          FUSE_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          for repo in IMAS_Design EPEDNN_Design; do
+            url="https://github.com/TimSlendebroek/${repo}.jl.git"
+            branch="master"
+            if [ -n "$FUSE_BRANCH" ] && git ls-remote --exit-code --heads "$url" "$FUSE_BRANCH" >/dev/null 2>&1; then
+              branch="$FUSE_BRANCH"
+            fi
+            echo "Using ${repo} @ ${branch}"
+            git clone --depth 1 --branch "$branch" "$url" "../${repo}"
+          done
+
       - name: Test (fork IMAS_Design / EPEDNN_Design)
         run: |
           julia --project=. --color=yes -e '
             using Pkg
             Pkg.develop([
-                PackageSpec(url="https://github.com/TimSlendebroek/IMAS_Design.jl.git"),
-                PackageSpec(url="https://github.com/TimSlendebroek/EPEDNN_Design.jl.git"),
+                PackageSpec(path="../IMAS_Design"),
+                PackageSpec(path="../EPEDNN_Design"),
             ])
             Pkg.instantiate()
             Pkg.test()'
