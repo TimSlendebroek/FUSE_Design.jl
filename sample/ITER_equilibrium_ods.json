@@ -1,4 +1,9 @@
 {
+    "dataset_description": {
+    "data_entry": {
+    "machine": "ITER"
+    }
+},
     "equilibrium": {
         "time": [
             0.0
