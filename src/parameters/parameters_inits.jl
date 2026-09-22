@@ -138,6 +138,7 @@ Base.@kwdef mutable struct FUSEparameters__ec_launcher{T} <: ParametersInit{T}
     _parent::WeakRef = WeakRef(nothing)
     _name::Symbol = :ec_launcher
     power_launched::Entry{T} = Entry{T}("W", "EC launched power"; check=x -> @assert x >= 0.0 "must be: power_launched >= 0.0")
+    rho_0::Entry{T} = Entry{T}("-", "Desired radial location of the EC deposition (used by ActorSimpleEC)"; check=x -> @assert 0.0 <= x <= 1.0 "must be: 0.0 <= rho_0 <= 1.0")
     efficiency_conversion::Entry{T} = Entry{T}(IMAS.ec_launchers__beam___efficiency, :conversion; default=1.0, check=x -> @assert x > 0.0 "must be: efficiency_conversion > 0.0")
     efficiency_transmission::Entry{T} =
         Entry{T}(IMAS.ec_launchers__beam___efficiency, :transmission; default=1.0, check=x -> @assert x > 0.0 "must be: efficiency_transmission > 0.0")

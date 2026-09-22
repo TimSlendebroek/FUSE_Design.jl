@@ -260,7 +260,15 @@ function save_study_database(
 
         if ini !== nothing
             gparent = check_and_create_group(fid, parent_group * "/ini.h5")
-            SimulationParameters.par2hdf!(ini, gparent)
+            # ini.general.dd (eg. input ODS data) is not serializable to HDF5
+            ini_dd_par = SimulationParameters.getparameter(ini.general, :dd)
+            ini_dd_bkp = ini_dd_par.value
+            ini_dd_par.value = missing
+            try
+                SimulationParameters.par2hdf!(ini, gparent)
+            finally
+                ini_dd_par.value = ini_dd_bkp
+            end
         end
 
         if dd !== nothing
