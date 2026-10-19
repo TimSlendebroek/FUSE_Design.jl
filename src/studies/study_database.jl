@@ -184,7 +184,7 @@ function save_study_database(
         @assert endswith(lowercase(name), ".h5") "database_name must end with .h5"
 		h5_filename =joinpath(savedir, name)
     else
-        h5_filename = joinpath(savedir, "pid$(getpid())_output.h5")
+        h5_filename = joinpath(savedir, "pid$(process_tag())_output.h5")
     end
 
     function check_and_create_group(fid::HDF5.File, target_group::AbstractString)

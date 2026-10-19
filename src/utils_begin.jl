@@ -395,3 +395,11 @@ end
 
 Base.showerror(io::IO, e::MissingExtensionError) =
     print(io, "The FUSE actor $(e.actor_name) cannot be run because the Julia package $(e.package_name).jl is not loaded. Please load it to enable this feature.")
+
+"""
+    process_tag()
+
+`<hostname>_<pid>`: names the per-process temporary study files (tmp_h5_output, tmp_csv_output). A pid alone is only
+unique within one node, so workers spread over several nodes could share a pid and corrupt each other's files.
+"""
+process_tag() = "$(gethostname())_$(getpid())"

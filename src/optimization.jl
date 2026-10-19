@@ -32,7 +32,7 @@ function optimization_engine(
 
     # create working directory
     original_dir = pwd()
-    savedir = abspath(joinpath(save_folder, "$(generation)__$(join(split(string(Dates.now()),":"),"-"))__$(getpid())"))
+    savedir = abspath(joinpath(save_folder, "$(generation)__$(join(split(string(Dates.now()),":"),"-"))__$(process_tag())"))
     mkpath(savedir)
     cd(savedir)
 
@@ -157,9 +157,9 @@ function optimization_engine(
     original_stderr = stderr  # Save the original stderr
 
     if isnothing(case_index)
-        parent_group = "/gen$(lpad(generation,Lpad_gen,"0"))/pid$(getpid())"
-        tmp_log_filename = "tmp_log_pid$(getpid()).txt"
-        tmp_log_io = open(joinpath(tmp_log_folder, "pid$(getpid()).txt"), "w+")
+        parent_group = "/gen$(lpad(generation,Lpad_gen,"0"))/pid$(process_tag())"
+        tmp_log_filename = "tmp_log_pid$(process_tag()).txt"
+        tmp_log_io = open(joinpath(tmp_log_folder, "pid$(process_tag()).txt"), "w+")
     else
         Lpad_gen = length(string(number_of_generations))
         Lpad_case = length(string(population_size))
@@ -214,7 +214,7 @@ function optimization_engine(
         if !isdir(tmp_csv_folder)
             mkpath(tmp_csv_folder)
         end
-        csv_filepath = joinpath(tmp_csv_folder, "extract_success_pid$(getpid()).csv")
+        csv_filepath = joinpath(tmp_csv_folder, "extract_success_pid$(process_tag()).csv")
         if isfile(csv_filepath)
             CSV.write(csv_filepath, df; append=true, header=false)
         else
@@ -258,7 +258,7 @@ function optimization_engine(
         if !isdir(tmp_csv_folder)
             mkpath(tmp_csv_folder)
         end
-        csv_filepath = joinpath(tmp_csv_folder, "extract_fail_pid$(getpid()).csv")
+        csv_filepath = joinpath(tmp_csv_folder, "extract_fail_pid$(process_tag()).csv")
         if isfile(csv_filepath)
             CSV.write(csv_filepath, df; append=true, header=false)
         else
