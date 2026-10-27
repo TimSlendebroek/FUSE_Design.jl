@@ -98,7 +98,7 @@ end
             @test size(cs.r, 2) == length(cs.grid.dim2)
 
             # plot recipe for the mode structure works
-            @test (FUSE.plot(dd.mhd_linear); true)
+            @test plot(dd.mhd_linear) isa Plots.Plot
         end
     end
 end

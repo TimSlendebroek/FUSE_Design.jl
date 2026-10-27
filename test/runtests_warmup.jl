@@ -1,15 +1,11 @@
 using FUSE
 using Test
 
+# KDEMO init + ActorWholeFacility: every actor coupled together, in one round (it also compiles that chain for
+# the tests that follow; a second "after compile" round only re-measured the runtime)
 @testset "warmup" begin
-    for round in ("before_compile", "after_compile")
-        println("== warmup_$(round) ==")
-        FUSE.TimerOutputs.@timeit FUSE.timer "warmup_$(round)" begin
-            dd = IMAS.dd()
-            @test begin
-                FUSE.warmup(dd)
-                true # this is to make the test pass
-            end
-        end
+    FUSE.TimerOutputs.@timeit FUSE.timer "warmup" begin
+        dd = IMAS.dd()
+        @test FUSE.warmup(dd) isa IMAS.DD
     end
 end
