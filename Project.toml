@@ -54,7 +54,6 @@ NonlinearSolve = "8913a72c-1f9b-4ce2-8d82-65094dcecaec"
 ONNXRunTime = "e034b28e-924e-41b2-b98f-d2bbeb830c6a"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
-PAM = "8217f67a-9bf0-495c-a6dc-30c3fb73287a"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PolygonOps = "647866c9-e3ac-4575-94e7-e3d426903924"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
@@ -83,10 +82,12 @@ VacuumFields = "9d9223b5-c5da-4bf4-abee-2a8bb6775a49"
 ZMQ = "c2297ded-f4af-51ae-bb23-16f91089e4e1"
 
 [weakdeps]
+PAM = "8217f67a-9bf0-495c-a6dc-30c3fb73287a"
 ThermalSystemModels = "68b8b4ac-b179-4f07-8ae9-c1f1360acbca"
 Weave = "44d3d7a6-8a23-5bf8-98c5-b353f8df5ec9"
 
 [extensions]
+PAMExt = "PAM"
 ThermalSystemModelsExt = "ThermalSystemModels"
 WeaveExt = "Weave"
 

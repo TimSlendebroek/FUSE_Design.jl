@@ -394,7 +394,13 @@ struct MissingExtensionError <: Exception
 end
 
 Base.showerror(io::IO, e::MissingExtensionError) =
-    print(io, "The FUSE actor $(e.actor_name) cannot be run because the Julia package $(e.package_name).jl is not loaded. Please load it to enable this feature.")
+    print(io,
+        "The FUSE actor $(e.actor_name) cannot be run because the Julia package $(e.package_name).jl is not loaded.\n",
+        "FUSE only loads heavy, rarely used packages on request, to keep the memory of every (worker) process small.\n",
+        "To enable $(e.actor_name), load the package before running:\n",
+        "    using $(e.package_name)\n",
+        "    @everywhere using $(e.package_name)   # when actors run on Distributed workers (studies, optimizer)\n",
+        "If $(e.package_name) is not in your environment yet, add it first: `] add $(e.package_name)` (FuseRegistry).")
 
 """
     process_tag()

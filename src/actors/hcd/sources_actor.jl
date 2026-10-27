@@ -19,7 +19,7 @@ mutable struct ActorSources{D,P} <: CompoundAbstractActor{D,P}
     ic_actor::Union{ActorSimpleIC{D,P},ActorReplay{D,P},ActorNoOperation{D,P}}
     lh_actor::Union{ActorSimpleLH{D,P},ActorReplay{D,P},ActorNoOperation{D,P}}
     nb_actor::Union{ActorSimpleNB{D,P},ActorRABBIT{D,P},ActorReplay{D,P},ActorNoOperation{D,P}}
-    pellet_actor::Union{ActorSimplePL{D,P},ActorPAM{D,P},ActorReplay{D,P},ActorNoOperation{D,P}}
+    pellet_actor::Union{ActorSimplePL{D,P},AbstractActorPellet{D,P},ActorReplay{D,P},ActorNoOperation{D,P}}
     neutral_actor::Union{ActorNeutralFueling{D,P},ActorReplay{D,P},ActorNoOperation{D,P}}
 end
 
