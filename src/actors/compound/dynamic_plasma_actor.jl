@@ -525,7 +525,7 @@ function plot_plasma_overview(dd::IMAS.DD, time0::Float64=dd.global_time;
                     lw=2.0,
                     ls=:dash,
                     legend_position=:left,
-                    background_color_legend=Plots.Colors.RGBA(1.0, 1.0, 1.0, 0.6),
+                    background_color_legend=Colors.RGBA(1.0, 1.0, 1.0, 0.6),
                     legend_foreground_color=:transparent
                 )
             end
@@ -785,9 +785,9 @@ function plot_plasma_overview(dd::IMAS.DD, time0::Float64=dd.global_time;
         # subplot = 16
         # plot!(cp1d.grid.rho_tor_norm, -IMAS.calc_z(cp1d.grid.rho_tor_norm, cp1d.electrons.density_thermal, :backward); ylim=(-max_scale, max_scale), lw=2.0)
 
-        l = @layout grid(3, 6)
+        l = plots_module().grid(3, 6)
         kw = Dict(kw...)
-        mm = Plots.Measures.mm
+        mm = Measures.mm
         p = plot(
             plot_eq_cx, plot_ip, plot_Te, plot_Ti, plot_n, plot_rotation,
             plot_eq_top, plot_j, plot_Qe, plot_Qi, plot_Ga, plot_Pi,

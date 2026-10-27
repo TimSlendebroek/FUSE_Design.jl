@@ -1,5 +1,4 @@
 import RABBIT
-using Plots
 
 #= =========== =#
 #  ActorRABBIT  #

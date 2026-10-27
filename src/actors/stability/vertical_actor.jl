@@ -144,7 +144,7 @@ function _finalize(actor::ActorVerticalStability)
     # plot
     if par.do_plot
         plot(dd.build; wireframe=true, title="Passive structures considered for vertical stability")
-        colors = distinguishable_colors(length(actor.passive_coils))
+        colors = Colors.distinguishable_colors(length(actor.passive_coils))
         for (k, coil) in enumerate(actor.passive_coils)
             plot!(coil; color=colors[k], alpha=0.5)
         end

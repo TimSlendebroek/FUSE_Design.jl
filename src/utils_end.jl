@@ -832,7 +832,7 @@ A plot with the following characteristics:
     for i in index
         @series begin
             primary := false
-            series_annotations := Plots.text.([action[i], action[i+1]], 6, :red)
+            series_annotations := plots_module().text.([action[i], action[i+1]], 6, :red)
             color := :red
             [dates[i], dates[i+1]], [mem[i], mem[i+1]]
         end

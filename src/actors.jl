@@ -100,6 +100,7 @@ Calls `_step(actor)`
 This is where the main part of the actor calculation gets done
 """
 function step(actor::T, args...; kw...) where {T<:AbstractActor}
+    _has_do_plot(actor.par) && actor.par.do_plot && plots_module() # clear error if do_plot is set without `using Plots`
     global_time(actor.par, global_time(actor.dd)) # syncrhonize global_time of `par` with the one of `dd`
     if !actor_logging(actor.dd)
         s_actor = _step(actor, args...; kw...)

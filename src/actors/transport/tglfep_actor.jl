@@ -287,9 +287,9 @@ The EP/alpha species is auto-detected by element (helium, `z_n ≈ 2`); override
 
     layout := (1, 3)
     size --> (1300, 380)
-    left_margin --> 6 * Plots.Measures.mm
-    bottom_margin --> 8 * Plots.Measures.mm
-    top_margin --> 5 * Plots.Measures.mm
+    left_margin --> 6 * Measures.mm
+    bottom_margin --> 8 * Measures.mm
+    top_margin --> 5 * Measures.mm
 
     @series begin
         subplot := 1

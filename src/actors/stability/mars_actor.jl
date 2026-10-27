@@ -307,9 +307,9 @@ function _step(actor::ActorMars)
     if par.do_plot
         if !isempty(dd.equilibrium.time_slice)
             println("Plotting initial equilibrium...")
-            plt = FUSE.Plots.plot(dd.equilibrium; label="before ActorEquilibrium")
+            plt = plot(dd.equilibrium; label="before ActorEquilibrium")
         else
-            plt = FUSE.Plots.plot()
+            plt = plot()
         end
         display(plt)
     end

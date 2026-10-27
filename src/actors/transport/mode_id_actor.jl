@@ -155,8 +155,8 @@ end
 const _MODE_MARKER_SHAPES = [:circle, :diamond, :square, :utriangle, :dtriangle, :hexagon, :star5]
 
 function _mode_color(mode::TurbulenceMode, alpha::Real=0.5)
-    c = Plots.Colors.parse(Plots.Colors.Colorant, MODE_COLORS[mode])
-    return Plots.Colors.RGBA(Plots.Colors.red(c), Plots.Colors.green(c), Plots.Colors.blue(c), alpha)
+    c = Colors.parse(Colors.Colorant, MODE_COLORS[mode])
+    return Colors.RGBA(Colors.red(c), Colors.green(c), Colors.blue(c), alpha)
 end
 
 @recipe function plot_ActorModeID(actor::ActorModeID)
@@ -208,14 +208,14 @@ rotation with mode-colored scatter markers superimposed at each `rho_transport` 
 When multiple `dd` objects are provided, profile lines are differentiated by line style and
 mode markers by marker shape. Color always encodes the dominant turbulence mode.
 """
-function Plots.plot(actor::ActorModeID, ::Val{:profiles}; kwargs...)
+function plot(actor::ActorModeID, ::Val{:profiles}; kwargs...)
     par = actor.par
     rho_transport = collect(par.rho_transport)
 
     line_styles = [:solid, :dash, :dot, :dashdot, :dashdotdot]
     ylabels = [L"T_e~[\mathrm{eV}]", L"n_e~[\mathrm{m}^{-3}]", L"T_i~[\mathrm{eV}]", L"\omega_\mathrm{tor}~[\mathrm{rad/s}]"]
 
-    p = plot(layout=(2, 2), size=(1000, 700), margin=5 * Plots.Measures.mm; kwargs...)
+    p = plot(layout=(2, 2), size=(1000, 700), margin=5 * Measures.mm; kwargs...)
 
     for (dd_idx, (label, dd)) in enumerate(actor.labeled_dds)
         cp1d = dd.core_profiles.profiles_1d[]

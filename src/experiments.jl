@@ -164,7 +164,7 @@ function LH_analysis(dd::IMAS.DD; scale_LH::Real=0.0, transition_start::Real=0.0
     if do_plot
         p = plot(; layout=(4, 1), size=(1000, 1000), link=:x)
 
-        background_color_legend = PlotUtils.Colors.RGBA(1.0, 1.0, 1.0, 0.6)
+        background_color_legend = Colors.RGBA(1.0, 1.0, 1.0, 0.6)
 
         # Density
         subplot = 1

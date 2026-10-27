@@ -3,8 +3,10 @@ module FUSE
 using IMAS
 import IMAS: heaviside, pulse, ramp, trap, gaus, beta, sequence
 import IMASutils: mirror_bound, argmin_abs, trapz
-import Plots
-using Plots
+using RecipesBase
+import RecipesBase: plot, plot!
+import Colors
+import Measures
 using HelpPlots
 using Printf
 using InteractiveUtils
@@ -37,6 +39,7 @@ include("utils_begin.jl")
 #  ABSTRACT PARAMETERS  #
 #= =================== =#
 include("parameters.jl")
+include("plotting.jl")
 
 #= ===== =#
 #  CASES  #

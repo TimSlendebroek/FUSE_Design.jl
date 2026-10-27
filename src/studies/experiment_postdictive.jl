@@ -258,13 +258,16 @@ end
 function animated_plasma_overview(dd::IMAS.DD, dir::AbstractString, dd1::Union{IMAS.dd,Nothing}=nothing; aggregate_hcd::Bool=true, fps::Int=12)
     fulldir = abspath(dir)
     @assert isdir(fulldir) "$fulldir directory does not exist"
-    a = Plots.@animate for (k, time0) in enumerate(dd.equilibrium.time)
+    Plots = plots_module()
+    a = Plots.Animation()
+    for (k, time0) in enumerate(dd.equilibrium.time)
         try
             FUSE.plot_plasma_overview(dd, Float64(time0); dd1, aggregate_hcd)
             savefig(abspath(joinpath(fulldir, "$(@sprintf("%04d", k)).png")))
         catch e
             plot()
         end
+        Plots.frame(a)
     end
-    Plots.gif(a, abspath(joinpath(fulldir, "dd.gif")); fps)
+    gif(a, abspath(joinpath(fulldir, "dd.gif")); fps)
 end
