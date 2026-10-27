@@ -45,27 +45,31 @@ jobs:
       # branch matching the FUSE branch under test when it exists, else its master. dev the
       # clones and run the tests in the SAME session so Pkg.test() inherits the dev'd paths
       # and can never fall back to the registry versions.
-      - name: Clone matching fork branches (IMAS_Design / EPEDNN_Design)
+      # FRESCO, TJLFEP (repo TGLFEP.jl) and TroyonBetaNN forks are used only when they have a branch with the
+      # FUSE branch name (e.g. lean-deps: they no longer load Plots); otherwise the registry versions.
+      - name: Clone matching fork branches
         env:
           FUSE_BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
-          for repo in IMAS_Design EPEDNN_Design; do
+          for repo in IMAS_Design EPEDNN_Design FRESCO TGLFEP TroyonBetaNN; do
             url="https://github.com/TimSlendebroek/${repo}.jl.git"
-            branch="master"
             if [ -n "$FUSE_BRANCH" ] && git ls-remote --exit-code --heads "$url" "$FUSE_BRANCH" >/dev/null 2>&1; then
               branch="$FUSE_BRANCH"
+            elif [ "$repo" = IMAS_Design ] || [ "$repo" = EPEDNN_Design ]; then
+              branch="master"
+            else
+              echo "Using registry ${repo}"
+              continue
             fi
             echo "Using ${repo} @ ${branch}"
             git clone --depth 1 --branch "$branch" "$url" "../${repo}"
           done
 
-      - name: Test (fork IMAS_Design / EPEDNN_Design)
+      - name: Test (fork IMAS_Design / EPEDNN_Design, plus any matching forks)
         run: |
           julia --project=. --color=yes -e '
             using Pkg
-            Pkg.develop([
-                PackageSpec(path="../IMAS_Design"),
-                PackageSpec(path="../EPEDNN_Design"),
-            ])
+            repos = ("IMAS_Design", "EPEDNN_Design", "FRESCO", "TGLFEP", "TroyonBetaNN")
+            Pkg.develop([PackageSpec(path=joinpath("..", r)) for r in repos if isdir(joinpath("..", r))])
             Pkg.instantiate()
             Pkg.test()'
