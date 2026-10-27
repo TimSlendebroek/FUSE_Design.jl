@@ -15,6 +15,7 @@ using StaticArrays
 import AbstractTrees: print_tree
 import ProgressMeter
 import Measurements: ±, Measurement
+import PrecompileTools
 
 function __init__()
     # By default we disable use of threads in BLAS if using multiple Julia threads
@@ -219,15 +220,16 @@ include("logging.jl")
 #= ===== =#
 include("utils_end.jl")
 
-#= ========== =#
-#  PRECOMPILE  #
-#= ========== =#
-include("precompile.jl")
-
 #= ===== =#
 #  TESTS  #
 #= ===== =#
 include("test_cases.jl")
+
+#= ========== =#
+#  PRECOMPILE  #
+#= ========== =#
+include("precompile.jl") # last: its workload runs the whole package (warmup uses test_cases.jl)
+
 
 #= ====== =#
 #= EXPORT =#
