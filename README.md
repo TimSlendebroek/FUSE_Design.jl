@@ -1,3 +1,29 @@
+> [!NOTE]
+> **About this fork.** FUSE_Design is a public, stable version of FUSE focused on **fusion power-plant design**:
+> steady-state whole-facility studies and constrained multi-objective optimization (CMOOP), rather than the
+> time-dependent, digital-twin direction of upstream [ProjectTorreyPines/FUSE.jl](https://github.com/ProjectTorreyPines/FUSE.jl).
+>
+> - **Versions** are `<upstream version at the split>+design.<n>`. The current release is **1.1.5+design.2**, split
+>   from upstream v1.1.5; [CHANGELOG.md](CHANGELOG.md) lists what each release changes.
+> - **Lean workers:** Plots.jl and PAM.jl are optional. `using Plots` brings back all plotting (e.g.
+>   `plot(dd.core_sources)`); `ActorPAM` needs `using PAM`.
+> - **The stack:** [IMAS_Design](https://github.com/TimSlendebroek/IMAS_Design.jl), [IMASdd_Design](https://github.com/TimSlendebroek/IMASdd_Design.jl),
+>   [EPEDNN_Design](https://github.com/TimSlendebroek/EPEDNN_Design.jl), [TurbulentTransport_Design](https://github.com/TimSlendebroek/TurbulentTransport_Design.jl),
+>   [TGLF.jl (TJLF)](https://github.com/TimSlendebroek/TGLF.jl), [FRESCO](https://github.com/TimSlendebroek/FRESCO.jl), [TGLFEP.jl (TJLFEP)](https://github.com/TimSlendebroek/TGLFEP.jl) and
+>   [TroyonBetaNN](https://github.com/TimSlendebroek/TroyonBetaNN.jl), plus the registry fork [FuseRegistry.jl](https://github.com/TimSlendebroek/FuseRegistry.jl), which points
+>   every stack package at these public forks.
+
+### Installing the design stack
+
+```julia
+using Pkg
+Pkg.Registry.add(url="https://github.com/TimSlendebroek/FuseRegistry.jl")
+Pkg.add([PackageSpec(url="https://github.com/TimSlendebroek/$repo.jl", rev=rev) for (repo, rev) in (
+    ("FUSE_Design", "v1.1.5+design.2"), ("IMAS_Design", "v7.1.8+design.2"), ("IMASdd_Design", "v8.5.2"),
+    ("EPEDNN_Design", "fa309f066afe"), ("TurbulentTransport_Design", "v1.2.17"), ("TGLF", "b8fd35ad3015"),
+    ("FRESCO", "v0.7.3+design.1"), ("TGLFEP", "v2.0.14+design.1"), ("TroyonBetaNN", "v1.1.0+design.1"))])
+```
+
 # FUSE.jl
 
 FUSE (**FU**sion **S**ynthesis **E**ngine) is an open-source framework for integrated simulations of fusion devices.
@@ -53,6 +79,7 @@ Here’s a simple example of setting up and running a FUSE simulation in Julia:
 
 ```julia
 using FUSE
+using Plots # FUSE.digest plots; in this fork Plots is loaded only on request
 
 # Obtain `ini` and `act` parameters for a specific use case
 ini, act = FUSE.case_parameters(:FPP)
@@ -71,7 +98,8 @@ Make sure to take a look at the [introductory tutorial](https://fuse.help/dev/tu
 
 ## Installation
 
-Follow these [installation instructions](https://fuse.help/dev/install.html).
+This design fork: see [Installing the design stack](#installing-the-design-stack) above.
+Upstream FUSE: follow these [installation instructions](https://fuse.help/dev/install.html).
 
 ## Citation
 

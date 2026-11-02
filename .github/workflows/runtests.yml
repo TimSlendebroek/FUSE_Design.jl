@@ -19,7 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         version: ["1.11"]
-        os: [ubuntu-latest, macos-latest]
+        # ubuntu only: GitHub's hosted macOS runners were often never assigned (job "not acquired"), which failed
+        # whole runs; macOS is covered by running the test suite locally
+        os: [ubuntu-latest]
     env:
       GKSwstype: "100" # headless Plots.jl
     steps:
