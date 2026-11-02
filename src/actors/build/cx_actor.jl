@@ -294,11 +294,13 @@ function wall_from_eq!(
     try
         pr, pz = IMAS.resample_2d_path(pr, pz; n_points=101, method=:linear)
     catch e
-        pp = plot(wall_poly; aspect_ratio=:equal, alpha=0.5)
-        for (pr, pz) in private
-            plot!(pp, pr, pz; label="")
+        if plots_loaded()
+            pp = plot(wall_poly; aspect_ratio=:equal, alpha=0.5)
+            for (pr, pz) in private
+                plot!(pp, pr, pz; label="")
+            end
+            display(pp)
         end
-        display(pp)
         rethrow(e)
     end
 
@@ -411,11 +413,13 @@ function divertor_regions!(
         backwall_domain_poly = try
             LibGEOS.intersection(backwall_poly, domain_poly)
         catch e
-            display(plot(backwall_poly; aspect_ratio=:equal))
-            display(plot!(eqt; cx=true))
-            display(scatter!([RA, Rx], [ZA, Zx]))
-            display(plot!(xx, yy))
-            display(plot!(domain_poly; alpha=0.5))
+            if plots_loaded()
+                display(plot(backwall_poly; aspect_ratio=:equal))
+                display(plot!(eqt; cx=true))
+                display(scatter!([RA, Rx], [ZA, Zx]))
+                display(plot!(xx, yy))
+                display(plot!(domain_poly; alpha=0.5))
+            end
             rethrow(e)
         end
         divertor_poly = LibGEOS.difference(backwall_domain_poly, plasma_poly)
@@ -438,11 +442,13 @@ function divertor_regions!(
             structure.outline.r = [v[1] for v in coords]
             structure.outline.z = [v[2] for v in coords]
         catch e
-            p = plot(eqt; cx=true)
-            plot!(backwall_poly; alpha=0.3)
-            plot!(domain_poly; alpha=0.3)
-            plot!(plasma_poly; alpha=0.3)
-            display(p)
+            if plots_loaded()
+                p = plot(eqt; cx=true)
+                plot!(backwall_poly; alpha=0.3)
+                plot!(domain_poly; alpha=0.3)
+                plot!(plasma_poly; alpha=0.3)
+                display(p)
+            end
             rethrow(e)
         end
 

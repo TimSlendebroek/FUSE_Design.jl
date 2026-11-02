@@ -18,6 +18,7 @@ using Test
         println("do_plot => ", error_of(() -> FUSE.step(FUSE.ActorPowerNeeds(dd, act.ActorPowerNeeds))))
         println("scatter! => ", error_of(() -> FUSE.scatter!([1.0], [1.0])))
         println("plot => ", error_of(() -> FUSE.plot(dd.equilibrium)))
+        println("plots_loaded: FUSE=", FUSE.plots_loaded(), " IMAS=", IMAS.plots_loaded())
         """
     out = read(`$(Base.julia_cmd()) --project=$(Base.active_project()) --startup-file=no -e $code`, String)
     @test occursin("loaded: Plots=false GR=false PAM=false", out)
@@ -27,6 +28,48 @@ using Test
     @test occursin("do_plot => FUSE plotting needs Plots.jl", out) # step() stops before running the actor
     @test occursin("scatter! => FUSE plotting needs Plots.jl", out)
     @test occursin("run `using Plots` first", out) # IMAS error hint on the RecipesBase plot stub
+    @test occursin("plots_loaded: FUSE=false IMAS=false", out)
+end
+
+# Actors draw diagnostic plots in some catch blocks before rethrowing. Without Plots (workers) such a plot would
+# replace the real error with "needs Plots.jl" in the study's failures, so each one must be guarded by plots_loaded()
+# (or do_plot/verbose, which the user asks for). Static check: no catch block in src/actors calls a plotting function
+# unless an `if` on such a guard encloses the call or the catch itself; `guard && ...` covers only its own line.
+const PLOTCALL = r"(^|[^.\w])(plot!?|contour!?|scatter!?|heatmap|current)\("
+const GUARD_IF = r"^\s*(if|elseif)\b.*(plots_loaded\(\)|do_plot|verbose)"
+const GUARD_AND = r"(plots_loaded\(\)|do_plot|verbose)\s*&&"
+indentation(l) = length(l) - length(lstrip(l))
+function inside_guard(lines, i)
+    ind = indentation(lines[i])
+    for k in i-1:-1:1
+        l = lines[k]
+        isempty(strip(l)) && continue
+        indentation(l) < ind || continue
+        occursin(GUARD_IF, l) && return true
+        occursin(r"^\s*function\b", l) && return false
+        ind = indentation(l)
+    end
+    return false
+end
+@testset "actor error paths do not need Plots" begin
+    offenders = String[]
+    for (root, _, files) in walkdir(joinpath(pkgdir(FUSE), "src", "actors")), f in files
+        endswith(f, ".jl") || continue
+        lines = readlines(joinpath(root, f))
+        for (i, l) in enumerate(lines)
+            occursin(r"^\s*catch\b", l) || continue
+            inside_guard(lines, i) && continue
+            for j in i+1:min(i + 40, length(lines))
+                lj = lines[j]
+                isempty(strip(lj)) && continue
+                indentation(lj) <= indentation(l) && break # end of the catch block
+                occursin(GUARD_IF, lj) && break
+                occursin(GUARD_AND, lj) && continue
+                occursin(PLOTCALL, lj) && (push!(offenders, "$f:$j"); break)
+            end
+        end
+    end
+    @test isempty(offenders)
 end
 
 ENV["GKSwstype"] = "nul" # headless GR
@@ -36,6 +79,7 @@ using Plots
     @test Base.get_extension(FUSE, :FUSEPlotsExt) !== nothing
     @test Base.get_extension(IMAS, :IMASPlotsExt) !== nothing
     @test FUSE.plots_module() === Plots
+    @test FUSE.plots_loaded() && IMAS.plots_loaded()
 
     ini, act = FUSE.case_parameters(:KDEMO)
     dd = IMAS.dd()

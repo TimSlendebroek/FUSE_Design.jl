@@ -108,9 +108,11 @@ function _step(actor::ActorCHEASE)
             par.rescale_eq_to_ip,
             par.clear_workdir)
     catch e
-        display(plot(pr, pz; marker=:circle, aspect_ratio=:equal))
-        display(plot(rho_pol, pressure; marker=:circle, xlabel="sqrt(ψ)", title="Pressure [Pa]"))
-        display(plot(rho_pol, j_tor; marker=:circle, xlabel="sqrt(ψ)", title="Jtor [A]"))
+        if plots_loaded()
+            display(plot(pr, pz; marker=:circle, aspect_ratio=:equal))
+            display(plot(rho_pol, pressure; marker=:circle, xlabel="sqrt(ψ)", title="Pressure [Pa]"))
+            display(plot(rho_pol, j_tor; marker=:circle, xlabel="sqrt(ψ)", title="Jtor [A]"))
+        end
         rethrow(e)
     end
 
@@ -161,12 +163,14 @@ function _finalize(actor::ActorCHEASE{D,P}) where {D<:Real, P<:Real}
     try
         gEQDSK2IMAS(actor.chease.gfile, eq)
     catch e
-        EQ = MXHEquilibrium.efit(actor.chease.gfile, 1)
-        psi_b = MXHEquilibrium.psi_boundary(EQ; r=EQ.r, z=EQ.z)
-        psi_a = EQ.psi_rz(EQ.axis...)
-        delta = (psi_b - psi_a) / 10.0
-        levels = range(psi_b - delta, psi_b + delta, 11)
-        display(contour(EQ.r, EQ.z, transpose(actor.chease.gfile.psirz); levels, aspect_ratio=:equal, clim=(levels[1], levels[end])))
+        if plots_loaded()
+            EQ = MXHEquilibrium.efit(actor.chease.gfile, 1)
+            psi_b = MXHEquilibrium.psi_boundary(EQ; r=EQ.r, z=EQ.z)
+            psi_a = EQ.psi_rz(EQ.axis...)
+            delta = (psi_b - psi_a) / 10.0
+            levels = range(psi_b - delta, psi_b + delta, 11)
+            display(contour(EQ.r, EQ.z, transpose(actor.chease.gfile.psirz); levels, aspect_ratio=:equal, clim=(levels[1], levels[end])))
+        end
         rethrow(e)
     end
 

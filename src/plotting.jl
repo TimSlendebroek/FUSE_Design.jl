@@ -18,6 +18,14 @@ function plots_module()
     return ext.Plots
 end
 
+"""
+    plots_loaded()
+
+Returns true when Plots.jl is loaded. Diagnostic plots in error paths check it, so that without Plots (e.g. on workers)
+the original exception is rethrown instead of being replaced by the "needs Plots.jl" error.
+"""
+plots_loaded() = Base.get_extension(@__MODULE__, :FUSEPlotsExt) !== nothing
+
 for f in (:scatter, :scatter!, :vline!, :hline!, :vspan!, :contour, :contour!, :heatmap, :histogram, :pie, :twinx, :current, :savefig, :gif, :cgrad)
     @eval $f(args...; kw...) = Base.invokelatest(getfield(plots_module(), $(QuoteNode(f))), args...; kw...)
 end

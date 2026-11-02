@@ -372,11 +372,13 @@ function _step(actor::ActorHFSsizing)
         end
 
     catch e
-        print_details(; do_plot=true)
-        plot(eqt; cx=true)
-        plot!(old_build)
-        display(plot!(dd.build; cx=false))
-        display(plot(dd.solid_mechanics.center_stack.stress))
+        print_details(; do_plot=plots_loaded())
+        if plots_loaded()
+            plot(eqt; cx=true)
+            plot!(old_build)
+            display(plot!(dd.build; cx=false))
+            display(plot(dd.solid_mechanics.center_stack.stress))
+        end
         dd.build = old_build
         rethrow(e)
     end

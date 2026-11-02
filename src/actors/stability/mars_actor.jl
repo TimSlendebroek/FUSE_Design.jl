@@ -1103,8 +1103,10 @@ function write_EXPEQ_file(dd::IMAS.DD, par)
     z_bound_norm = zb_new / R0
 
     #plt = plot()
-    plt = plot!(rb_new, zb_new; linewidth=3., aspect_ratio=:equal, label="Plasma Boundary")
-    display(plt)
+    if plots_loaded()
+        plt = plot!(rb_new, zb_new; linewidth=3., aspect_ratio=:equal, label="Plasma Boundary")
+        display(plt)
+    end
 
     @assert length(rb_new) == length(zb_new) "R,Z boundary arrays must have the same shape"
     
@@ -1129,8 +1131,10 @@ function write_EXPEQ_file(dd::IMAS.DD, par)
         r_lim_norm = r_lim / R0
         z_lim_norm = z_lim / R0
         
-        plt = plot!(r_lim, z_lim; linewidth=1.5, aspect_ratio=:equal,label="MARS resistive wall", legend=:outertop)
-        display(plt)
+        if plots_loaded()
+            plt = plot!(r_lim, z_lim; linewidth=1.5, aspect_ratio=:equal,label="MARS resistive wall", legend=:outertop)
+            display(plt)
+        end
         
     end
   
