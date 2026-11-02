@@ -31,13 +31,17 @@ jobs:
 
       - uses: julia-actions/cache@v2
 
-      # The FuseRegistry lists packages via git@ SSH URLs; route GitHub over HTTPS so the public
-      # repos clone without SSH keys or a token. (Any private deps simply won't resolve — and a
-      # public FUSE shouldn't depend on private packages anyway.)
-      - name: Add FuseRegistry (public, over HTTPS)
+      # FuseRegistry from the TimSlendebroek fork: its packages point at the public forks over HTTPS, so
+      # nothing needs SSH keys or a token. ProjectTorreyPines is made unreachable, so CI fails if anything
+      # still depends on it. The cached registry is dropped first: an old cache holds the upstream one,
+      # whose package URLs point at ProjectTorreyPines.
+      - name: Add FuseRegistry (fork) and block ProjectTorreyPines
         run: |
           git config --global url."https://github.com/".insteadOf "git@github.com:"
-          julia --color=yes -e 'using Pkg; Pkg.Registry.add(RegistrySpec(url="https://github.com/ProjectTorreyPines/FuseRegistry.jl.git")); Pkg.Registry.add("General"); Pkg.Registry.update()'
+          git config --global url."https://ptp-blocked.invalid/".insteadOf "https://github.com/ProjectTorreyPines/"
+          git config --global --add url."https://ptp-blocked.invalid/".insteadOf "git@github.com:ProjectTorreyPines/"
+          rm -rf ~/.julia/registries/FuseRegistry
+          julia --color=yes -e 'using Pkg; Pkg.Registry.add(RegistrySpec(url="https://github.com/TimSlendebroek/FuseRegistry.jl.git")); Pkg.Registry.add("General"); Pkg.Registry.update()'
 
       # Always test against the FORK versions of IMAS/EPEDNN — their additions (e.g.
       # IMAS.pedestal_poloidal_beta, EPEDNN.ensemble_uncertainty) are not in the registry.
@@ -65,11 +69,16 @@ jobs:
             git clone --depth 1 --branch "$branch" "$url" "../${repo}"
           done
 
+      # develop/instantiate run with auto-precompile off: otherwise they compile the whole stack with
+      # default flags and Pkg.test() compiles it all again with --check-bounds=yes (18 + 25 min cold).
       - name: Test (fork IMAS_Design / EPEDNN_Design, plus any matching forks)
+        env:
+          JULIA_PKG_PRECOMPILE_AUTO: "0"
         run: |
           julia --project=. --color=yes -e '
             using Pkg
             repos = ("IMAS_Design", "EPEDNN_Design", "FRESCO", "TGLFEP", "TroyonBetaNN")
             Pkg.develop([PackageSpec(path=joinpath("..", r)) for r in repos if isdir(joinpath("..", r))])
             Pkg.instantiate()
+            ENV["JULIA_PKG_PRECOMPILE_AUTO"] = "1"
             Pkg.test()'
